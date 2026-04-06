@@ -282,6 +282,7 @@ export default function Page() {
   const [zoom, setZoom] = useState(1);
   const [liveMode, setLiveMode] = useState(true);
   const [searchHighlight, setSearchHighlight] = useState(null);
+  const [hoveredObject, setHoveredObject] = useState(null);
 
   const board = room.boards[room.activeBoardId];
   const base = room.coordinateBase || DEFAULT_BASE;
@@ -563,6 +564,7 @@ export default function Page() {
     const point = pointToHex(event.clientX, event.clientY);
     if (!point) return;
     setHoverCoord(point);
+    setHoveredObject(null);
     updatePresence(point);
     if (!dragState) return;
     if (dragState.kind === "entity") setEntityPosition(dragState.id, point.q, point.r);
@@ -737,6 +739,14 @@ export default function Page() {
     setStatus("Excel export downloaded");
   }
 
+
+  function setHoverFromHex(q, r, extra = null) {
+    const serverX = Math.round(base.X + (q - base.q) + (r - base.r) * base.xStep);
+    const serverY = Math.round(base.Y + (q - base.q) * -1 + (r - base.r) * base.yStep);
+    setHoverCoord({ q, r, serverX, serverY });
+    setHoveredObject(extra);
+  }
+
   function renderEntityShape(entity) {
     const center = axialToPixel(entity.q, entity.r);
     const occupied = getEntityCells(entity);
@@ -745,6 +755,9 @@ export default function Page() {
       <g
         key={entity.id}
         className="draggable-group"
+        onPointerEnter={() => setHoverFromHex(entity.q, entity.r, { kind: "entity", label: entity.label, callsign: entity.callsign || "", color: entity.color })}
+        onPointerMove={() => setHoverFromHex(entity.q, entity.r, { kind: "entity", label: entity.label, callsign: entity.callsign || "", color: entity.color })}
+        onPointerLeave={() => setHoveredObject(null)}
         onPointerDown={(e) => {
           e.stopPropagation();
           setSelectedItem({ kind: "entity", id: entity.id });
@@ -788,6 +801,9 @@ export default function Page() {
       <g
         key={item.id}
         className="draggable-group"
+        onPointerEnter={() => setHoverFromHex(item.q, item.r, { kind: item.kind, label: item.text, callsign: "", color: item.color })}
+        onPointerMove={() => setHoverFromHex(item.q, item.r, { kind: item.kind, label: item.text, callsign: "", color: item.color })}
+        onPointerLeave={() => setHoveredObject(null)}
         onPointerDown={(e) => {
           e.stopPropagation();
           setSelectedItem({ kind: "ground", id: item.id });
@@ -828,6 +844,9 @@ export default function Page() {
     return (
       <g
         key={arrow.id}
+        onPointerEnter={() => setHoverFromHex(arrow.startQ, arrow.startR, { kind: "arrow", label: arrow.label, callsign: "", color: arrow.color })}
+        onPointerMove={() => setHoverFromHex(arrow.startQ, arrow.startR, { kind: "arrow", label: arrow.label, callsign: "", color: arrow.color })}
+        onPointerLeave={() => setHoveredObject(null)}
         onPointerDown={(evt) => {
           evt.stopPropagation();
           setSelectedItem({ kind: "arrow", id: arrow.id });
@@ -1204,6 +1223,12 @@ export default function Page() {
                   ))}
                 </svg>
               </div>
+              {hoveredObject && hoverCoord ? (
+                <div className="hover-chip">
+                  <div className="hover-chip-title">{hoveredObject.label}</div>
+                  <div className="hover-chip-sub">{hoveredObject.kind} • X:{hoverCoord.serverX} Y:{hoverCoord.serverY}{hoveredObject.callsign ? ` • ${hoveredObject.callsign}` : ""}</div>
+                </div>
+              ) : null}
             </div>
 
             <div className="bottom-strip">
@@ -1216,8 +1241,8 @@ export default function Page() {
                 <div className="summary-value">{hoverCoord ? `X:${hoverCoord.serverX} Y:${hoverCoord.serverY}` : "—"}</div>
               </div>
               <div className="summary-box">
-                <div className="summary-label">Board size</div>
-                <div className="summary-value">100 x 100</div>
+                <div className="summary-label">Hover object</div>
+                <div className="summary-value">{hoveredObject ? hoveredObject.label : "—"}</div>
               </div>
               <div className="summary-box">
                 <div className="summary-label">Objects on board</div>

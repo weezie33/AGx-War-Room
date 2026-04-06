@@ -17,3 +17,8 @@ The export includes:
 
 HQ footprints export all 7 occupied cells.
 Arrow exports include start and end coordinates.
+
+
+## v8.1 hover fix
+- hovering over entities, notes, labels, and arrows now updates hover info
+- added floating hover info chip on the battlefield

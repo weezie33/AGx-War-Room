@@ -347,3 +347,31 @@ button.danger { background: #fee2e2; border-color: #fca5a5; }
     height: 1800px;
   }
 }
+
+
+.hover-chip {
+  position: sticky;
+  left: 12px;
+  bottom: 12px;
+  margin: -58px 0 12px 12px;
+  width: max-content;
+  max-width: 380px;
+  z-index: 5;
+  background: rgba(17,24,39,0.92);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+}
+
+.hover-chip-title {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.hover-chip-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.82);
+  margin-top: 2px;
+}
