@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type PointerEvent } from "react";
 import { initializeApp, getApps } from "firebase/app";
 import {
   getFirestore,
@@ -326,7 +326,7 @@ export default function Page() {
     setStatus("Share link copied");
   }
 
-  function boardEventToHex(event: React.PointerEvent<SVGSVGElement>) {
+  function boardEventToHex(event: PointerEvent<SVGSVGElement>) {
     const svg = event.currentTarget;
     const rect = svg.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * width + BOUNDS.minX;
